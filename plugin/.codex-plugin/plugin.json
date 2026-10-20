@@ -1,0 +1,19 @@
+{
+  "apps": "./.app.json",
+  "author": {
+    "name": "App developer"
+  },
+  "description": "Application de recrutement structurée couvrant le cadrage du besoin, la scorecard et le sourcing.",
+  "interface": {
+    "capabilities": [],
+    "category": "Other",
+    "defaultPrompt": null,
+    "developerName": "App developer",
+    "displayName": "Recruitment Intelligence",
+    "longDescription": "Application de recrutement structurée couvrant le cadrage du besoin, la scorecard et le sourcing.",
+    "shortDescription": "Application de recrutement structurée couvrant le cadrage du besoin, la scorecard et le sourcing.",
+    "websiteURL": "https://recruitment-intelligence-v12.li-yuan07091989.chatgpt.site"
+  },
+  "name": "dev-85f51d08dfcc8191b763a94d8bf7cf81",
+  "version": "1.0.1"
+}
