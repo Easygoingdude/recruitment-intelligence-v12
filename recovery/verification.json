@@ -1,0 +1,41 @@
+{
+  "source_commit": "405f5403230ecb813bb821efc62b4ec95a4df818",
+  "source_tree": "f9dc624ef690907308077ab8d0bdbca02a114149",
+  "original_files": 196,
+  "original_commits": 28,
+  "git_fsck": "PASS",
+  "self_contained_bundle": "PASS",
+  "independent_restore": "PASS",
+  "all_196_files_byte_identical": "PASS",
+  "original_test_suites": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0,
+    "live_ai_calls": 0,
+    "network": "blocked by verification loader unless suite provides a mock"
+  },
+  "typescript": {
+    "command": "node node_modules/typescript/bin/tsc --noEmit --incremental false",
+    "exit_code": 0
+  },
+  "production_build": {
+    "entrypoint": "Sites build-site.mjs",
+    "exit_code": 0,
+    "production_published": false
+  },
+  "credential_pattern_scan": {
+    "current_files": 196,
+    "historical_blobs": 358,
+    "hits": 0,
+    "exhaustive": false
+  },
+  "published_browser_qa": {
+    "status": "BLOCKED",
+    "observed": "ChatGPT sign-in required",
+    "reason": "Auto-review rejected initiation of sign-in without explicit account authorization",
+    "modules_visited": []
+  },
+  "production_data_exported": false,
+  "runtime_secrets_exported": false,
+  "github_main_original": "f1852ea9c747370b1ee75f62c01fc8852ca7a8d3"
+}

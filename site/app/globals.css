@@ -1,0 +1,267 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "../vendor/shadcn-tailwind-4.13.0.css";
+
+:root {
+  --background: #f4f6f9;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #0f172a;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #eef2ff;
+  --accent-foreground: #4338ca;
+  --destructive: #e11d48;
+  --border: #e2e8f0;
+  --input: #cbd5e1;
+  --ring: #4f46e5;
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: "Inter", "Aptos", "Segoe UI", Arial, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
+  color-scheme: light;
+}
+
+body {
+  min-width: 320px;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.field-control {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  padding: 0.7rem 0.85rem;
+  color: #0f172a;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+}
+
+.field-control::placeholder {
+  color: #94a3b8;
+}
+
+.field-control:hover {
+  border-color: #94a3b8;
+}
+
+.field-control:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgb(79 70 229 / 12%);
+}
+
+.primary-button,
+.secondary-button,
+.danger-button,
+.icon-button,
+.choice-button,
+.segmented-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.7rem;
+  font-weight: 650;
+  transition: color 150ms ease, background 150ms ease, border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+
+.primary-button,
+.secondary-button,
+.danger-button {
+  min-height: 2.65rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.875rem;
+}
+
+.primary-button {
+  border: 1px solid #0f172a;
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 18%);
+}
+
+.primary-button:hover:not(:disabled) {
+  background: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgb(15 23 42 / 18%);
+}
+
+.primary-button:disabled {
+  opacity: 0.45;
+}
+
+.secondary-button {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+}
+
+.secondary-button:hover:not(:disabled) {
+  border-color: #94a3b8;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.danger-button {
+  border: 1px solid #fecdd3;
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.danger-button:hover {
+  background: #ffe4e6;
+}
+
+.icon-button {
+  height: 2.4rem;
+  width: 2.4rem;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+}
+
+.icon-button:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.choice-button {
+  min-height: 2.65rem;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  padding: 0.6rem 0.7rem;
+  color: #475569;
+  font-size: 0.8rem;
+}
+
+.choice-button:hover:not(:disabled) {
+  border-color: #a5b4fc;
+  color: #3730a3;
+}
+
+.choice-button-active {
+  border-color: #4f46e5;
+  background: #eef2ff;
+  color: #3730a3;
+  box-shadow: inset 0 0 0 1px #4f46e5;
+}
+
+.segmented-button {
+  min-height: 2.5rem;
+  flex: 1 1 9rem;
+  padding: 0.55rem 0.85rem;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.segmented-button:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.segmented-button-active {
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 16%);
+}
+
+.segmented-button-active:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+.step-button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.65rem;
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.7rem;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: left;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.step-button:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.step-button-active {
+  background: #eef2ff;
+  color: #3730a3;
+}
+
+@media print {
+  header,
+  aside,
+  button {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+}

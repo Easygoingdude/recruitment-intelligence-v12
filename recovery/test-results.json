@@ -1,0 +1,92 @@
+[
+  {
+    "suite": "test-application-tracking.ts",
+    "exit_code": 0,
+    "seconds": 0.65
+  },
+  {
+    "suite": "test-assessment-flow.ts",
+    "exit_code": 0,
+    "seconds": 1.18
+  },
+  {
+    "suite": "test-candidature-workflow.ts",
+    "exit_code": 0,
+    "seconds": 0.61
+  },
+  {
+    "suite": "test-interview-retention.ts",
+    "exit_code": 0,
+    "seconds": 0.83
+  },
+  {
+    "suite": "test-jobs-agenda.ts",
+    "exit_code": 0,
+    "seconds": 0.53
+  },
+  {
+    "suite": "test-need-state.ts",
+    "exit_code": 0,
+    "seconds": 0.44
+  },
+  {
+    "suite": "test-offer-pdf.ts",
+    "exit_code": 0,
+    "seconds": 0.91
+  },
+  {
+    "suite": "test-offer-section.ts",
+    "exit_code": 0,
+    "seconds": 0.66
+  },
+  {
+    "suite": "test-recruitment-ai.ts",
+    "exit_code": 0,
+    "seconds": 0.7
+  },
+  {
+    "suite": "test-scorecard-excel.ts",
+    "exit_code": 0,
+    "seconds": 0.47
+  },
+  {
+    "suite": "test-scorecard-limits.ts",
+    "exit_code": 0,
+    "seconds": 0.74
+  },
+  {
+    "suite": "test-scorecard-order.ts",
+    "exit_code": 0,
+    "seconds": 0.6
+  },
+  {
+    "suite": "test-scorecard-profiles.ts",
+    "exit_code": 0,
+    "seconds": 0.76
+  },
+  {
+    "suite": "test-scorecard-questions.ts",
+    "exit_code": 0,
+    "seconds": 0.61
+  },
+  {
+    "suite": "test-sourcing-ai.ts",
+    "exit_code": 0,
+    "seconds": 0.63
+  },
+  {
+    "suite": "test-sourcing-funnel.ts",
+    "exit_code": 0,
+    "seconds": 0.67
+  },
+  {
+    "suite": "test-sourcing-management.ts",
+    "exit_code": 0,
+    "seconds": 0.35
+  },
+  {
+    "suite": "test-sourcing-queries.ts",
+    "exit_code": 0,
+    "seconds": 0.67
+  }
+]
