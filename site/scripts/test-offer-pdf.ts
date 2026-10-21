@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import { PDFDocument } from 'pdf-lib';
+import { buildOfferPdf } from '../lib/offer-pdf';
+import type { JobAdSection } from '../lib/recruitment-engine';
+const regular=new Uint8Array(await fs.readFile('public/fonts/DejaVuSans.ttf'));
+const bold=new Uint8Array(await fs.readFile('public/fonts/DejaVuSans-Bold.ttf'));
+const sections:JobAdSection[]=Array.from({length:8},(_,i)=>({id:`section-${i}`,title:['Le contexte','Vos missions','Votre environnement','Les compétences attendues','Votre parcours','Les conditions','Le recrutement','Nous rejoindre'][i],body:i===1?Array.from({length:20},(_,j)=>`• Mission ${j+1} : diagnostiquer les incidents, documenter les résolutions et vérifier le retour à l’usage avec l’utilisateur. Une rémunération de 35 000 € est un exemple fictif.`).join('\n'):'Une offre fictive pour vérifier l’export PDF. Les accents français, l’apostrophe typographique et les caractères spéciaux : é è ê ç œ € sont conservés.\n\nLe contenu affiché et les modifications manuelles doivent être repris intégralement.',source:'QA'}));
+const bytes=await buildOfferPdf('Technicien support informatique · offre fictive',sections,regular,bold);
+const pdf=await PDFDocument.load(bytes);
+assert.ok(pdf.getPageCount()>=3);assert.equal(pdf.getTitle(),'Technicien support informatique · offre fictive');
+assert.ok(pdf.getPages().every(p=>Math.abs(p.getWidth()-595.28)<1));
+await assert.rejects(()=>buildOfferPdf('Vide',[],regular,bold));
+await fs.mkdir('/workspace/scratch/7a4c868771a2/pdf-qa',{recursive:true});
+await fs.writeFile('/workspace/scratch/7a4c868771a2/pdf-qa/offer-test.pdf',bytes);
+console.log(JSON.stringify({pdf:'PASS',pages:pdf.getPageCount(),bytes:bytes.length,emptyOfferRejected:true}));

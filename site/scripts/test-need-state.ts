@@ -1,0 +1,57 @@
+import assert from 'node:assert/strict';
+import { emptyBrief } from '../lib/recruitment-engine';
+import { applyImportedNeed, matchesNeed } from '../lib/need-state';
+const previous={...emptyBrief,roleTitle:'Développeur',mustHave:'C#',location:'Vélizy',missions:'Maintenir les applications'};
+const fields=[{key:'roleTitle' as const,value:'Responsable support',excerpt:'Responsable support'},{key:'missions' as const,value:'Encadrer le helpdesk',excerpt:'Encadrer le helpdesk'}];
+const fresh=applyImportedNeed(previous,{roleTitle:'Validé',mustHave:'Validé'},fields,true);
+assert.equal(fresh.brief.roleTitle,'Responsable support');
+assert.equal(fresh.brief.mustHave,'');assert.equal(fresh.brief.location,'');
+assert.equal(fresh.brief.missions,'Encadrer le helpdesk');
+const updated=applyImportedNeed(previous,{roleTitle:'Validé'},fields,false);
+assert.equal(updated.brief.roleTitle,'Développeur');assert.equal(updated.brief.mustHave,'C#');
+assert.equal(updated.brief.missions,'Encadrer le helpdesk');
+assert.equal(matchesNeed(JSON.stringify(previous),fresh.brief),false);
+assert.equal(matchesNeed(undefined,fresh.brief),false);
+assert.equal(matchesNeed(JSON.stringify(fresh.brief),fresh.brief),true);
+assert.equal(previous.roleTitle,'Développeur');
+console.log('PASS: new import replaces validated fields, omitted facts cleared, same-need update preserves validated facts, stale/legacy offers rejected, current offer retained, source unmodified.');
+
+const { buildScorecard } = await import('../lib/recruitment-engine');
+const { isScorecardCurrent } = await import('../lib/need-state');
+const card={...buildScorecard(previous,'Opérationnel',60),sourceBriefSnapshot:JSON.stringify(previous)};
+card.criteria[0].note=2;card.criteria[0].comment='Preuve fictive à conserver';
+assert.equal(isScorecardCurrent(card,previous,'Opérationnel'),true);
+assert.equal(isScorecardCurrent(card,fresh.brief,'Opérationnel'),false);
+assert.equal(isScorecardCurrent(card,previous,'Manager'),false);
+const saved=JSON.parse(JSON.stringify(card));
+assert.equal(isScorecardCurrent(saved,previous,'Opérationnel'),true);
+assert.equal(isScorecardCurrent(saved,fresh.brief,'Opérationnel'),false);
+assert.equal(saved.criteria[0].note,2);assert.equal(saved.criteria[0].comment,'Preuve fictive à conserver');
+const legacy={...card,sourceBriefSnapshot:undefined};
+assert.equal(isScorecardCurrent(legacy,previous,'Opérationnel'),false);
+assert.equal(isScorecardCurrent(legacy,previous,'Opérationnel',JSON.stringify(previous)),true);
+console.log('PASS: scorecard stale on brief/profile change, round-trip persistence, notes/comments preserved, legacy provenance checked.');
+
+const { scorecardExportContext }=await import('../lib/need-state');
+const reordered=JSON.stringify(Object.fromEntries(Object.entries(previous).reverse()));
+assert.equal(matchesNeed(reordered,previous),true);
+assert.equal(matchesNeed('{broken',previous),false);
+const archive=scorecardExportContext(card,fresh.brief,'Opérationnel',80);
+assert.equal(archive.archived,true);assert.equal(archive.brief.roleTitle,'Développeur');
+assert.equal(archive.scorecard.globalThreshold,60);assert.equal(archive.scorecard.criteria[0].note,2);
+const regenerated={...card,sourceBriefSnapshot:JSON.stringify(fresh.brief)};
+const latest=scorecardExportContext(regenerated,fresh.brief,'Opérationnel',75);
+assert.equal(latest.archived,false);assert.equal(latest.brief.roleTitle,'Responsable support');assert.equal(latest.scorecard.globalThreshold,75);
+const unknown=scorecardExportContext(legacy,fresh.brief,'Opérationnel',75);
+assert.equal(unknown.brief.roleTitle,'Grille non rattachée');assert.equal(unknown.archived,true);
+const JSZip=(await import('jszip')).default;
+const fs=await import('node:fs/promises');
+const {buildScorecardExcel}=await import('../lib/scorecard-excel');
+const template=new Uint8Array(await fs.readFile('public/templates/scorecard-reference-v1.xlsx'));
+for(const context of [archive,latest]){
+ const zip=await JSZip.loadAsync(await buildScorecardExcel(template,context.scorecard,context.brief));
+ const main=await zip.file('xl/worksheets/sheet1.xml')!.async('string');
+ assert.ok(main.includes(context.brief.roleTitle));
+ if(context.archived)assert.ok(!main.includes('Responsable support'));
+}
+console.log('PASS: key order ignored, stale export keeps original role/threshold/notes, regenerated export uses new role, unknown lineage labelled, both XLSX contexts generated.');
