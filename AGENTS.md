@@ -1,20 +1,32 @@
-# Recruitment Intelligence — development workflow
+# Recruitment Intelligence — développement
 
-## Scope and authorization
+## Sources et branches
 
-The user requests that GitHub be updated after every development task, without asking again for routine commits and pushes. Canonical repository: Easygoingdude/recruitment-intelligence-v12, branch main. Hosted Sites project: appgprj_6ad5dccbb9048191a5490c8054dd89a8. Application source belongs in site/; preserve plugin/ and recovery/.
+GitHub `Easygoingdude/recruitment-intelligence-v12` est la référence du code. Sources applicatives dans `site/` ; conserver `plugin/` et les preuves immuables de `recovery/`.
+Site existant : `appgprj_6ad5dccbb9048191a5490c8054dd89a8`.
 
-## Before editing
+- `main` : versions stables validées, aucune écriture directe.
+- `develop` : intégration ; partir de sa dernière version pertinente.
+- `feature/*`, `fix/*` : une branche dédiée par changement, commit explicite et PR vers `develop`.
+- Promotion de `develop` vers `main` par PR après validation ; aucun force-push.
+- Conserver `recovery/v12.8`. Les tags désignent des versions effectivement validées, avec périmètre de validation documenté.
 
-Read these instructions and any more specific AGENTS.md. Read the latest main branch and inspect the current Sites source when working on the hosted application. Do not assume an old checkout or the GitHub snapshot equals the current live source. Preserve unrelated user changes. The user reports that the recovery branch was already merged; do not repeat that merge as routine setup.
+## Avant et après chaque tâche
 
-## Required completion steps
+Lire les instructions applicables, actualiser les refs GitHub et ouvrir le dépôt source Sites actuel avec la compétence Sites avant tout changement hébergé. Comparer les deux sources, préserver les changements concurrents ; ne jamais écraser une divergence silencieusement. Ne pas répéter la fusion de récupération.
 
-1. Finish the requested changes and run checks appropriate to their scope.
-2. Review the diff. Exclude credentials, .env files, candidate data, uploaded resumes, database exports, node_modules, runtime caches and generated deployment bundles. Preserve tracked configuration and dependency lockfiles. Never include tokens in Git remotes or logs.
-3. For hosted changes, follow the Sites skill for source synchronization and publication, preserving the project identity and audience. Mirror the exact final application source to site/ in this GitHub repository; preserve repository-only files and recovery evidence. Verify new files and intentional deletions as well as modifications. Never overwrite a newer GitHub or Sites change blindly.
-4. Commit the task changes with a descriptive message and push to main using the authorized GitHub connection. With branch protection, use a branch and pull request and explicitly report its status. Do not force-push. Resolve concurrent changes without discarding others' work.
-5. Read back the resulting GitHub ref/files to verify the remote contains the intended changes. For hosted tasks verify the published source corresponds to the mirrored source.
-6. Report the result briefly, with the GitHub commit link and any deployment or verification limitation. Do not claim the task is fully synchronized if a push failed. Report the concrete blocker and retain recoverable work.
+Terminer les changements autorisés, vérifier le diff, exécuter les tests pertinents, TypeScript et le build pour une livraison applicative. `python3 tools/check.py --build` fournit une commande reproductible après installation des dépendances. Les tests utilisent des réponses IA simulées et une base en mémoire ; ils ne remplacent pas la recette fonctionnelle.
 
-This is an agent development workflow, not an installed background sync service. Changes made outside a development session that reads this repository are not automatically detected. Do not claim that a webhook, scheduled job or native Sites-to-GitHub integration exists unless it has actually been configured and verified.
+Commits et pushes de routine sur branche dédiée autorisés sans nouvelle confirmation. Créer une PR et relire les fichiers distants ; rapporter commit, PR, résultats et limites. Fusionner après validation. La protection de branche n'est pas actuellement imposée par GitHub : cette règle reste procédurale tant qu'une protection n'est pas disponible.
+
+Exclure secrets, jetons, fichiers `.env`, CV, données candidats, exports de base, dépendances, caches et archives générées. Ne pas supprimer les fichiers historiques de récupération. Tout changement de stockage, authentification ou données de production nécessite une analyse d'impact préalable.
+
+## Synchronisation et publication
+
+Voir `docs/DEVELOPMENT.md`. GitHub et Sites ont des dépôts et des historiques distincts. Aucun service de synchronisation automatique n'est installé.
+Après validation de GitHub, transférer uniquement les sources applicatives vers le checkout du même projet Sites, vérifier ajouts/modifications/suppressions et empreintes. Conserver le project_id, l'audience et les liaisons de stockage. Ne pas envoyer le monorepo entier à Sites.
+Ne pas publier, migrer ni remplacer le Site sans accord explicite de l'utilisateur. Ne jamais demander `publish_on_push` dans ce workflow. Après accord, suivre la compétence Sites : commit source poussé, archive correspondante, version enregistrée, déploiement explicite, contrôle de son statut et recette publiée. Enregistrer les deux commits GitHub/Sites et la version effectivement publiée. Ne jamais annoncer une synchronisation complète si une étape reste bloquée.
+
+## IA et confidentialité
+
+Préserver les règles métier, RAG ciblé, harness, schémas et validation humaine. Pseudonymiser avant transmission, isoler sessions/recrutements et minimiser les journaux. Profils Luna Low et Sol Medium maximum ; vérifier les identifiants API avant toute évolution du routage. Aucun appel réel ni modèle plus coûteux pour une simple vérification du workflow.
