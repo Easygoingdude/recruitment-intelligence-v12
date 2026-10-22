@@ -20,6 +20,17 @@ export function useJobStorage(){
   queues.current.set(id,work);void work.catch(e=>setError((e as Error).message)).finally(()=>setPending(n=>n-1));return work;
  }
  async function add(title:string,preferences:Partial<Pick<WorkspaceSnapshot,'styleCorpus'|'modelPreference'|'jobFormat'|'jobTone'>>={}){setPending(n=>n+1);try{const job=createJob(title);job.workspace={...job.workspace,...preferences};const result=await put(job,0);setError('');return result;}catch(e){setError((e as Error).message);throw e;}finally{setPending(n=>n-1);}}
+ async function remove(id:string){
+  const record=latest.current.get(id);if(!record)throw new Error('Poste introuvable.');
+  if(queues.current.has(id))await queues.current.get(id);
+  setPending(n=>n+1);
+  try{
+   const response=await fetch('/api/jobs',{method:'DELETE',headers:{'content-type':'application/json'},body:JSON.stringify({id,expectedRevision:record.revision})});
+   const body=await response.json() as {error?:string;deleted?:boolean};
+   if(!response.ok||!body.deleted)throw new Error(body.error||'Suppression impossible.');
+   latest.current.delete(id);setRecords([...latest.current.values()]);setError('');
+  }catch(e){setError((e as Error).message);throw e;}finally{setPending(n=>n-1);}
+ }
  async function saveWorkspace(id:string,workspace:WorkspaceSnapshot){const result=await update(id,{workspace,...(workspace.brief.roleTitle.trim()?{title:workspace.brief.roleTitle.trim()}:{} )});return result;}
- return {records,ready,error,pending,setError,add,update,saveWorkspace,getRecord:(id:string)=>latest.current.get(id)};
+ return {records,ready,error,pending,setError,add,update,remove,saveWorkspace,getRecord:(id:string)=>latest.current.get(id)};
 }
