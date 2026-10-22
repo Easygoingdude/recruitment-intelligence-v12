@@ -17,7 +17,8 @@ export async function handleJobs(request:Request,env:{DB?:D1Database}){
    if(current.revision!==input.expectedRevision)return json({error:'Le poste a été modifié ailleurs. Rechargez la liste.'},409);
    // Do not destroy recruitment records through a job deletion.
    for(const table of ['recruitment_applications','recruitment_appointments','interviews','recruitment_application_history']){
-    const rows=await env.DB.prepare(`SELECT COUNT(*) AS total FROM ${table} WHERE user_id = ? AND job_id = ?`).bind(user,input.id).first<{total:number}>();
+    const jobFilter=table==='recruitment_applications'||table==='recruitment_application_history'?'job_id':'json_extract(payload, \'$.jobId\')';
+    const rows=await env.DB.prepare(`SELECT COUNT(*) AS total FROM ${table} WHERE user_id = ? AND ${jobFilter} = ?`).bind(user,input.id).first<{total:number}>();
     if((rows?.total??0)>0)return json({error:'Ce poste possède des candidatures, entretiens ou statistiques. Clôturez-le plutôt que de supprimer ses données.'},409);
    }
    const deleted=await env.DB.prepare('DELETE FROM recruitment_jobs WHERE user_id = ? AND id = ? AND revision = ?').bind(user,input.id,input.expectedRevision).run();
