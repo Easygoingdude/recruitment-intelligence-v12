@@ -319,7 +319,7 @@ export default function RecruitmentIntelligenceApp({job,dashboard,onSave,registe
   const [importName, setImportName] = useState("");
   const [importBusy, setImportBusy] = useState(false);
   const [importError, setImportError] = useState("");
-  const [jobFormat, setJobFormat] = useState<"Courte" | "Standard" | "Détaillée">("Standard");
+  const [jobFormat, setJobFormat] = useState<"Professionnel" | "Concis" | "Courte" | "Standard" | "Détaillée">("Professionnel");
   const [jobTone, setJobTone] = useState<"Professionnel direct" | "Institutionnel" | "Dynamique">("Professionnel direct");
   const [jobAd, setJobAd] = useState<JobAdSection[]>([]);
   const [qualityChecks, setQualityChecks] = useState<QualityCheck[]>([]);
@@ -592,7 +592,7 @@ export default function RecruitmentIntelligenceApp({job,dashboard,onSave,registe
 
   const generateOffer = async () => {
     if (jobAd.length && !window.confirm("Remplacer l’offre actuelle, y compris vos modifications, par une nouvelle proposition IA ?")) return;
-    const result = await requestAI<{ sections: JobAdSection[]; qualityChecks: QualityCheck[] }>({ task: "offer", brief, format: jobFormat, tone: jobTone }, { refresh: jobAd.length > 0 });
+    const result = await requestAI<{ sections: JobAdSection[]; qualityChecks: QualityCheck[] }>({ task: "offer", brief, format: jobFormat, tone: "Professionnel direct" }, { refresh: jobAd.length > 0 });
     if (!result) return;
     setNeedNotice("");
     setJobAd(result.output.sections);
@@ -602,7 +602,7 @@ export default function RecruitmentIntelligenceApp({job,dashboard,onSave,registe
 
   const regenerateSection=async(id:string)=>{
     const section=jobAd.find(s=>s.id===id);if(!section)return;
-    const result=await requestAI<{sections:JobAdSection[]}>({task:'offer',brief,format:jobFormat,tone:jobTone,sectionId:id as NonNullable<AIRequest['sectionId']>,sourceText:section.body});
+    const result=await requestAI<{sections:JobAdSection[]}>({task:'offer',brief,format:jobFormat,tone:'Professionnel direct',sectionId:id as NonNullable<AIRequest['sectionId']>,sourceText:section.body});
     if(result?.output.sections.length===1&&result.output.sections[0].id===id)setSectionProposal({section:result.output.sections[0],basisBody:section.body,briefSnapshot:JSON.stringify(brief)});
   };
   const acceptSection=()=>{if(!sectionProposal)return;try{if(sectionProposal.briefSnapshot!==JSON.stringify(brief))throw new Error('Le besoin a changé depuis la proposition.');const next=applyOfferSection(jobAd,sectionProposal.section,sectionProposal.basisBody);setJobAd(next);setQualityChecks(checkJobAd(brief,next));setSectionProposal(null);}catch(e){setAiError((e as Error).message);}};
@@ -1083,8 +1083,8 @@ type M1Props = OfferSectionControls & {
   validateCurrentStep: () => void;
   analysis: ReturnType<typeof analyzeBrief>;
   aiAnalysis: AIAnalysis | null;
-  jobFormat: "Courte" | "Standard" | "Détaillée";
-  setJobFormat: (value: "Courte" | "Standard" | "Détaillée") => void;
+  jobFormat: "Professionnel" | "Concis" | "Courte" | "Standard" | "Détaillée";
+  setJobFormat: (value: "Professionnel" | "Concis" | "Courte" | "Standard" | "Détaillée") => void;
   jobTone: "Professionnel direct" | "Institutionnel" | "Dynamique";
   setJobTone: (value: "Professionnel direct" | "Institutionnel" | "Dynamique") => void;
   jobAd: JobAdSection[];
@@ -1299,8 +1299,8 @@ function OfferView({
   pdfBusy: boolean;
   pdfError: string;
   pdfDownload: {url:string;name:string}|null;
-  format: "Courte" | "Standard" | "Détaillée";
-  setFormat: (value: "Courte" | "Standard" | "Détaillée") => void;
+  format: "Professionnel" | "Concis" | "Courte" | "Standard" | "Détaillée";
+  setFormat: (value: "Professionnel" | "Concis" | "Courte" | "Standard" | "Détaillée") => void;
   tone: "Professionnel direct" | "Institutionnel" | "Dynamique";
   setTone: (value: "Professionnel direct" | "Institutionnel" | "Dynamique") => void;
   sections: JobAdSection[];
@@ -1314,8 +1314,8 @@ function OfferView({
     <div className="space-y-6">
       <Panel className="flex flex-col gap-5 p-5 lg:flex-row lg:items-end lg:justify-between">
         <div className="grid flex-1 gap-4 sm:grid-cols-2">
-          <label><span className="mb-2 block text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Format</span><select value={format} onChange={(event) => setFormat(event.target.value as typeof format)} className="field-control h-11"><option>Courte</option><option>Standard</option><option>Détaillée</option></select></label>
-          <label><span className="mb-2 block text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Ton</span><select value={tone} onChange={(event) => setTone(event.target.value as typeof tone)} className="field-control h-11"><option>Professionnel direct</option><option>Institutionnel</option><option>Dynamique</option></select></label>
+          <label><span className="mb-2 block text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Rédaction de l’offre</span><select value={format==="Concis"?"Concis":"Professionnel"} onChange={(event) => setFormat(event.target.value as typeof format)} className="field-control h-11"><option value="Professionnel">Professionnel</option><option value="Concis">Concis (moins de 500 mots)</option></select><span className="mt-2 block text-xs text-slate-500">Dans les deux modes : corpus validé, informations du brief et conditions du poste préservés.</span></label>
+          
         </div>
         {sections.length>0 && <button type="button" onClick={exportPdf} disabled={pdfBusy} className="secondary-button"><Download className="h-4 w-4" />{pdfBusy?'Création du PDF…':'Télécharger PDF'}</button>}
         <button onClick={generate} className="primary-button"><Sparkles className="h-4 w-4" />{sections.length ? "Régénérer" : "Générer l’offre"}</button>
