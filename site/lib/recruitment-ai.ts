@@ -1,3 +1,4 @@
+import {countOfferWords,isConciseOfferValid} from './offer-word-count';
 import { SCORECARD_PROFILES, SCORECARD_DIMENSIONS, scorecardProfileRules, reviewScorecardProfile } from './scorecard-profiles';
 import { generateText, Output } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
@@ -268,7 +269,7 @@ export async function runRecruitmentAI(raw: unknown, env: AIEnvironment, context
       // A concise offer must be verified server-side; never silently truncate contractual details.
       if (input.format === 'Concis') {
         const wordCount = sections.map(section => section.title + ' ' + section.body).join(' ').trim().split(/\\s+/u).filter(Boolean).length;
-        if (wordCount >= 500) throw new AIRequestError('CONCISE_LIMIT', `L’offre concise contient ${wordCount} mots (titres compris). Elle dépasse la limite de 499 mots ; relancez la génération ou choisissez Professionnel. Aucun contenu n’a été supprimé automatiquement.`, 422);
+        if (!isConciseOfferValid(sections)) throw new AIRequestError('CONCISE_LIMIT', `L’offre concise contient ${wordCount} mots (titres compris). Elle dépasse la limite de 499 mots ; relancez la génération ou choisissez Professionnel. Aucun contenu n’a été supprimé automatiquement.`, 422);
       }
       warnings.push(...generated.warnings);
       output = { sections, qualityChecks: checkJobAd(brief, sections) }; usage = compactUsage(result.usage);
