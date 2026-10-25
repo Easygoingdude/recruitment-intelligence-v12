@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {countOfferWords,isConciseOfferValid} from '../lib/offer-word-count';
+import {countOfferWords,isConciseOfferValid} from '../lib/offer-word-count.ts';
 const make=(n:number)=>[{title:'Offre',body:Array.from({length:n},()=> 'mot').join(' ')}];
 assert.equal(countOfferWords([]),0);
 assert.equal(countOfferWords(make(498)),499);
