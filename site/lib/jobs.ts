@@ -13,7 +13,7 @@ export const workspaceSchema=z.object({
  scorecard:frozenScorecardSchema.nullable().default(null),level:z.enum(SCORECARD_LEVELS).default('Opérationnel'),threshold:z.number().min(0).max(100).default(60),
  sourcingSelected:strings.default([]),synonyms:z.record(text).default({}),funnelDraft:z.record(z.object({adjacent:text.optional(),transferable:text.optional(),locked:z.boolean().optional(),reason:text.optional(),verify:text.optional()})).default({}),sourcingFeedback:text.default(''),sourcingProposal:z.object({plan,basis:z.string().max(500000)}).nullable().default(null),
  styleCorpus:z.string().max(40000).default(''),modelPreference:z.enum(['auto','luna','sol']).default('auto'),aiAnalysis:analysis.nullable().default(null),aiRuns:z.record(run).default({}),importEvidence:z.record(text).default({}),
- jobFormat:z.enum(['Courte','Standard','Détaillée']).default('Standard'),jobTone:z.enum(['Professionnel direct','Institutionnel','Dynamique']).default('Professionnel direct'),
+ jobFormat:z.enum(['Professionnel','Concis','Courte','Standard','Détaillée']).default('Professionnel'),jobTone:z.enum(['Professionnel direct','Institutionnel','Dynamique']).default('Professionnel direct'),
 }).strict();
 export type WorkspaceSnapshot=z.infer<typeof workspaceSchema>;
 export const jobSchema=z.object({id:z.string().uuid(),title:z.string().trim().min(1).max(300),status:z.enum(['Ouvert','Clôturé']),inProgress:z.number().int().min(0).max(1000000),closed:z.number().int().min(0).max(1000000),createdAt:z.string().datetime(),updatedAt:z.string().datetime(),workspace:workspaceSchema}).strict();
