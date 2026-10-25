@@ -53,7 +53,7 @@ export type AIRequest = {
   sourceName?: string;
   sectionId?:'why'|'problems'|'expectations'|'required'|'plus'|'realities'|'value'|'conditions';
   styleCorpus?: string;
-  format?: 'Courte' | 'Standard' | 'Détaillée';
+  format?: 'Professionnel' | 'Concis' | 'Courte' | 'Standard' | 'Détaillée';
   tone?: 'Professionnel direct' | 'Institutionnel' | 'Dynamique';
   level?: 'Opérationnel' | 'Manager' | 'Direction' | 'Jeune diplômé';
   scorecardProfile?: ScorecardProfile;
