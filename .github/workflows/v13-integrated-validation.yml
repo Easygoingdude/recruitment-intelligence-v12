@@ -1,0 +1,26 @@
+name: V13 integrated validation
+on:
+  push:
+    branches: [feature/v13-consolidation-ui]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '11.25.0'
+      - run: pnpm install --frozen-lockfile
+      - run: node --experimental-strip-types scripts/test-offer-word-count.ts
+      - run: pnpm exec tsc --noEmit --incremental false
+      - run: pnpm build
