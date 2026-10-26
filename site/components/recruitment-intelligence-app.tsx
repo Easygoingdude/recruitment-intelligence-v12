@@ -6,6 +6,7 @@ import { applyImportedNeed, matchesNeed, isScorecardCurrent, scorecardExportCont
 import { SCORECARD_DIMENSIONS, reviewScorecardProfile, scorecardWeights } from '@/lib/scorecard-profiles';
 import { suggestSearchTerms } from '@/lib/sourcing-queries';
 import { SourcingFunnelView } from '@/components/sourcing-funnel-view';
+import { SourcingWorkspace } from '@/components/sourcing-workspace';
 import { ScorecardCriteriaList } from '@/components/scorecard-criteria-list';
 import { moveCriterion } from '@/lib/scorecard-order';
 import { scorecardCriterionLimit } from '@/lib/recruitment-engine';
@@ -917,6 +918,7 @@ export default function RecruitmentIntelligenceApp({job,dashboard,onSave,registe
               sourcingBusy={aiBusy==='sourcing'}
             />
           )}
+          {activeModule === "m3" && job && <SourcingWorkspace jobId={job.id} roleTitle={brief.roleTitle || job.title} axes={sourcingSelected} />}
           <div hidden={!['m4','m5','m6'].includes(activeModule)}><AssessmentWorkspace applicationStore={applicationStore} storage={interviews} appointments={appointments} requestedAppointmentId={requestedAppointmentId} jobId={job?.id} onControls={controls=>{assessmentControls.current=controls;}} mode={activeModule==='m5'?'m5':activeModule==='m6'?'m6':'m4'} scorecard={scorecard?{...scorecard,globalThreshold:threshold}:null} roleTitle={brief.roleTitle} scorecardStale={scorecardStale} onScorecard={()=>navigate('m2')}/></div>
           </fieldset>
         </main>
