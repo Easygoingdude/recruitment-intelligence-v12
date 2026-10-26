@@ -13,7 +13,7 @@ export function SourcingWorkspace({jobId,roleTitle,axes}:{jobId:string;roleTitle
  const [name,setName]=useState(''),[reference,setReference]=useState(''),[preview,setPreview]=useState(''),[reviewed,setReviewed]=useState(false),[error,setError]=useState(''),[busy,setBusy]=useState(false),[copied,setCopied]=useState(false);
  useEffect(()=>{try{const raw=sessionStorage.getItem(key);const values=raw?JSON.parse(raw):[];setEntries(Array.isArray(values)?values.filter((e:Entry)=>e.expiresAt>Date.now()&&stages.includes(e.stage)):[]);}catch{setEntries([]);}setLoaded(true);},[key]);
  useEffect(()=>{if(loaded)try{sessionStorage.setItem(key,JSON.stringify(entries.filter(e=>e.expiresAt>Date.now())));}catch{setError('Enregistrement dans la session indisponible.');}},[key,entries,loaded]);
- const terms=normaliseSearchTerms([roleTitle,...axes].filter(Boolean),3);
+ const terms=normaliseSearchTerms([roleTitle,...axes].filter(Boolean),4);
  const platform:SourcingPlatform=source==='HelloWork'?'hellowork':source==='Apec'?'apec':'linkedin';
  const query=renderSearchQuery(terms.map(t=>[t]),platform);
  async function load(file:File){setError('');setPreview('');setReviewed(false);setBusy(true);try{if(!reference.trim())throw new Error('Indiquez une référence pseudonymisée au format J.D.-ABC123.');setPreview(pseudonymiseCv(await extractCvText(file),name,reference.trim()));setName('');}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
@@ -36,6 +36,6 @@ export function SourcingWorkspace({jobId,roleTitle,axes}:{jobId:string;roleTitle
   </div>
   {error&&<p role="alert" className="text-sm text-rose-700">{error}</p>}
   <div className="grid gap-3 md:grid-cols-4">{stages.map(stage=><div key={stage} className="rounded-xl bg-slate-100 p-3"><h4 className="mb-3 text-sm font-bold">{stage} ({entries.filter(e=>e.stage===stage).length})</h4><div className="space-y-2">{entries.filter(e=>e.stage===stage).map(entry=><article key={entry.id} className="rounded-lg border border-slate-200 bg-white p-3"><p className="font-semibold">{entry.reference}</p><p className="mt-1 text-xs text-slate-500">{entry.source}</p><p className="my-2 line-clamp-4 whitespace-pre-wrap text-xs">{entry.evidence}</p><select aria-label={'Statut de '+entry.reference} className="field-control w-full text-xs" value={entry.stage} onChange={e=>move(entry.id,e.target.value as Stage)}>{stages.map(s=><option key={s}>{s}</option>)}</select><button className="mt-2 text-xs text-rose-700" onClick={()=>setEntries(old=>old.filter(x=>x.id!==entry.id))}>Retirer</button></article>)}</div></div>)}</div>
-  <p className="text-xs text-slate-500">KPI locaux : {entries.length} profils examinés, {entries.filter(e=>e.stage==='Pertinent').length} pertinents, {entries.filter(e=>e.stage==='Écarté').length} écartés. Les données de session ne sont pas synchronisées avec les candidatures serveur.</p>
+  <p className="text-xs text-slate-500">Compteurs temporaires : {entries.length} profils enregistrés, {entries.filter(e=>e.stage==='Pertinent').length} pertinents, {entries.filter(e=>e.stage==='Écarté').length} écartés. Les données de session ne sont pas synchronisées avec les candidatures serveur.</p>
  </section>;
 }
