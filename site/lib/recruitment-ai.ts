@@ -1,3 +1,4 @@
+import {countOfferWords,isConciseOfferValid} from './offer-word-count';
 import { SCORECARD_PROFILES, SCORECARD_DIMENSIONS, scorecardProfileRules, reviewScorecardProfile } from './scorecard-profiles';
 import { generateText, Output } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
@@ -27,7 +28,7 @@ const inputSchema = z.object({
   sourceName: z.string().max(200).default('Texte importé'),
   sectionId:z.enum(['why','problems','expectations','required','plus','realities','value','conditions']).optional(),
   styleCorpus: z.string().max(40000).default(''),
-  format: z.enum(['Courte', 'Standard', 'Détaillée']).default('Standard'),
+  format: z.enum(['Professionnel', 'Concis', 'Courte', 'Standard', 'Détaillée']).default('Professionnel'),
   tone: z.enum(['Professionnel direct', 'Institutionnel', 'Dynamique']).default('Professionnel direct'),
   level: z.enum(SCORECARD_LEVELS).default('Opérationnel'),
   scorecardProfile: z.enum(SCORECARD_PROFILES).default('Standard'),
@@ -254,7 +255,7 @@ export async function runRecruitmentAI(raw: unknown, env: AIEnvironment, context
       output={sections:[{id:item.id,title:TITLES[sectionIds.indexOf(item.id)],body:item.body,source:sources.join(', ')||'À compléter'}],qualityChecks:[]};usage=compactUsage(result.usage);
     } else if (input.task === 'offer') {
       const result = await generateText({ ...baseOptions, system: `${SYSTEM}\nRéférentiel rédactionnel stable :\n${STYLE_REFERENCE}`,
-        prompt: `Rédige une véritable offre, pas une concaténation de champs. Conserve exactement les huit sections et identifiants ${JSON.stringify(sectionIds)}. Format ${input.format} : Courte = 250 à 400 mots, Standard = 450 à 650 mots, Détaillée = 650 à 900 mots si le brief le permet. Ton ${input.tone} : direct = sobre et concret ; institutionnel = plus formel ; dynamique = phrases actives, sans survente. N’allonge pas un brief pauvre pour atteindre une longueur. Relie missions et enjeux. Cite pour chaque section uniquement les clés des champs ayant effectivement fourni les faits. Un champ absent est une information manquante, pas une invitation à compléter. Signale les lacunes dans warnings et, si nécessaire, par [À préciser] dans la section. Préserve tous les nombres, lieux, technologies, contraintes, avantages et distinctions indispensable/souhaitable. N’invente pas de résultat chiffré. Les conditions concrètes doivent couvrir tout ce qui est renseigné dans salary, location, remote, schedule, mobility, team et recruitmentProcess.\n${facts}\nExtraits complémentaires sélectionnés pour leur style uniquement, jamais comme faits du poste :\n${JSON.stringify(excerpts)}`,
+        prompt: `Rédige une véritable offre, pas une concaténation de champs. Conserve exactement les huit sections et identifiants ${JSON.stringify(sectionIds)}. Mode rédactionnel ${input.format} : Professionnel = offre complète, sobre, fluide, précise et naturelle, sans limite artificielle de mots ; Concis = strictement moins de 500 mots au total, sans omettre de condition ni fait renseigné dans le brief. Les anciens formats Courte, Standard et Détaillée sont interprétés comme Professionnel pour les dossiers historiques. Le ton est toujours professionnel, direct, naturel et contextualisé. Le corpus validé détermine en priorité les conventions de rédaction, le vocabulaire, le rythme et les structures ; reformule sans copier de faits propres au corpus. Évite les formules automatiques, slogans et répétitions. N’allonge pas un brief pauvre pour atteindre une longueur. Relie missions et enjeux. Cite pour chaque section uniquement les clés des champs ayant effectivement fourni les faits. Un champ absent est une information manquante, pas une invitation à compléter. Signale les lacunes dans warnings et, si nécessaire, par [À préciser] dans la section. Préserve tous les nombres, lieux, technologies, contraintes, avantages et distinctions indispensable/souhaitable. N’invente pas de résultat chiffré. Les conditions concrètes doivent couvrir tout ce qui est renseigné dans salary, location, remote, schedule, mobility, team et recruitmentProcess.\n${facts}\nExtraits complémentaires sélectionnés pour leur style uniquement, jamais comme faits du poste :\n${JSON.stringify(excerpts)}`,
         output: Output.object({ schema: offerSchema }),
       });
       const generated = result.output;
@@ -265,6 +266,11 @@ export async function runRecruitmentAI(raw: unknown, env: AIEnvironment, context
         if (!validSources.length && !item.body.includes('[À préciser]')) warnings.push(`Source à vérifier pour « ${TITLES[index]} ».`);
         return { id, title: TITLES[index], body: item.body, source: validSources.join(', ') || 'À compléter' };
       });
+      // A concise offer must be verified server-side; never silently truncate contractual details.
+      if (input.format === 'Concis') {
+        const wordCount = sections.map(section => section.title + ' ' + section.body).join(' ').trim().split(/\\s+/u).filter(Boolean).length;
+        if (!isConciseOfferValid(sections)) throw new AIRequestError('CONCISE_LIMIT', `L’offre concise contient ${wordCount} mots (titres compris). Elle dépasse la limite de 499 mots ; relancez la génération ou choisissez Professionnel. Aucun contenu n’a été supprimé automatiquement.`, 422);
+      }
       warnings.push(...generated.warnings);
       output = { sections, qualityChecks: checkJobAd(brief, sections) }; usage = compactUsage(result.usage);
     } else if (input.task === 'scorecard') {

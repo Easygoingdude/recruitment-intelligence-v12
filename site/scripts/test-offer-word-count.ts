@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {countOfferWords,isConciseOfferValid} from '../lib/offer-word-count.ts';
+const make=(n:number)=>[{title:'Offre',body:Array.from({length:n},()=> 'mot').join(' ')}];
+assert.equal(countOfferWords([]),0);
+assert.equal(countOfferWords(make(498)),499);
+assert.equal(countOfferWords(make(499)),500);
+assert.equal(isConciseOfferValid(make(498)),true);
+assert.equal(isConciseOfferValid(make(499)),false);
+assert.equal(isConciseOfferValid([{title:'Titre',body:'\tUn  texte\navec espaces'}]),true);
+console.log('PASS: concise word limit includes headings; 499 accepted; 500 rejected; whitespace normalized.');
