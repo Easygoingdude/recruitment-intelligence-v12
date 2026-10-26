@@ -3,24 +3,24 @@
 @import "../vendor/shadcn-tailwind-4.13.0.css";
 
 :root {
-  --background: #f4f6f9;
-  --foreground: #0f172a;
+  --background: #f6f8fa;
+  --foreground: #243746;
   --card: #ffffff;
   --card-foreground: #0f172a;
   --popover: #ffffff;
   --popover-foreground: #0f172a;
-  --primary: #0f172a;
+  --primary: #245a81;
   --primary-foreground: #ffffff;
   --secondary: #f1f5f9;
   --secondary-foreground: #0f172a;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  --accent: #eef2ff;
-  --accent-foreground: #4338ca;
+  --accent: #eaf2f7;
+  --accent-foreground: #245a81;
   --destructive: #e11d48;
   --border: #e2e8f0;
   --input: #cbd5e1;
-  --ring: #4f46e5;
+  --ring: #397fa8;
   --radius: 0.75rem;
 }
 
@@ -105,8 +105,8 @@ button:disabled {
 }
 
 .field-control:focus {
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgb(79 70 229 / 12%);
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px rgb(57 127 168 / 14%);
 }
 
 .primary-button,
@@ -133,14 +133,14 @@ button:disabled {
 }
 
 .primary-button {
-  border: 1px solid #0f172a;
-  background: #0f172a;
+  border: 1px solid var(--primary);
+  background: var(--primary);
   color: #ffffff;
   box-shadow: 0 1px 2px rgb(15 23 42 / 18%);
 }
 
 .primary-button:hover:not(:disabled) {
-  background: #1e293b;
+  background: #194966;
   transform: translateY(-1px);
   box-shadow: 0 5px 14px rgb(15 23 42 / 18%);
 }
@@ -265,3 +265,8 @@ button:disabled {
     padding: 0 !important;
   }
 }
+
+/* Recruitment Intelligence Professional: shadcn-compatible design tokens. */
+:root {--ri-brand:#245a81;--ri-brand-hover:#194966;--ri-surface:#f6f8fa;--ri-selection:#eaf2f7;}
+@media (prefers-reduced-motion: reduce) {*,*::before,*::after {scroll-behavior:auto!important;animation-duration:0.01ms!important;transition-duration:0.01ms!important;}}
+:focus-visible {outline:2px solid var(--ring);outline-offset:2px;}
